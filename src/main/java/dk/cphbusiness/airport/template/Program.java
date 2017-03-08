@@ -25,7 +25,7 @@ public class Program {
   public static void main(String[] args) {
     setup();
     System.out.println("Hello Airport");
-    new Thread(clock).start();
+//    new Thread(clock).start();
     
     }
   

@@ -13,6 +13,11 @@ public class Passenger implements Comparable<Passenger>{
     this.category = category;
     this.plane = plane;
     }
+
+  @Override
+  public String toString() {
+    return ""+id+") arrived "+arrivalTime+" as "+category+" and is "+status;
+    }
   
   public int getId() { return id; }
   
@@ -36,7 +41,5 @@ public class Passenger implements Comparable<Passenger>{
         return this.category.compareTo(other.category);
     return this.arrivalTime.compareTo(other.arrivalTime);
     }
-  
-  
 
   }
