@@ -14,7 +14,15 @@ public class PassengerProducer {
     }
   
   public void tick(Clock clock) {
-    throw new UnsupportedOperationException("No support");
+      for (Plane plane : planes) {
+          if (plane.getDepartureTime().compareTo(clock.getTime())>1){
+              List<Passenger> passengers = plane.getPassengers();
+              for (Passenger passenger : passengers) {
+                  queue.enqueue(passenger);
+              }
+          }
+      }
+      
     }
   
   
