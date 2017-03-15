@@ -16,7 +16,9 @@ public class Program {
     for (int hour = 7; hour <= 22; hour++) {
       planes.add(new Plane(new Time(hour, 00, 00)));
       }
+
     queue = new PrioritisingPassenger(10000);
+
     producer = new PassengerProducer(planes, queue);
     consumer = new PassengerConsumer(planes, queue);
     clock = new Clock(planes, producer, consumer, new Time(05, 00, 00));

@@ -29,7 +29,7 @@ public class PassengerConsumer {
       processingTicksLeft--;
       return;
       }
-    else {
+    else if (passenger != null) {
       Time now = clock.getTime();
       if (passenger.getPlane().getDepartureTime().compareTo(now) < 0) {
         passenger.setStatus(Status.MissedPlane);
@@ -40,6 +40,7 @@ public class PassengerConsumer {
         System.out.println("Passenger "+passenger+" has boarded");
         }
       }
+    
     if (queue.isEmpty()) return;
     else {
       passenger = queue.dequeue();
