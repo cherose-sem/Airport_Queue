@@ -22,16 +22,18 @@ public class PrioritisingPassenger implements PriorityQueue<Passenger> {
 
     public static void main(String[] args) {
         PrioritisingPassenger pp = new PrioritisingPassenger(100);
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 30; i++) {
             pp.enqueue(new Passenger(i, new Time(new Date().getTime()), pp.randomCat(), new Plane(new Time(new Date().getTime()))));
         }
-        for (int i = 0; i < 100; i++) {
+        pp.printQueue();
+        for (int i = 0; i < 30; i++) {
             System.out.println(pp.dequeue().getCategory());
+            System.out.println("");
         }
     }
 
     private Category randomCat() {
-        int rand = (int) (Math.random() * 3);
+        int rand = (int) (Math.random() * 5);
         if (rand == 0) {
             return Category.Monkey;
         }
@@ -41,61 +43,72 @@ public class PrioritisingPassenger implements PriorityQueue<Passenger> {
         if (rand == 2) {
             return Category.Family;
         }
+        if (rand == 3) {
+            return Category.BusinessClass;
+        }
         return Category.LateToFlight;
     }
 
     public PrioritisingPassenger(int capacity) {
-        items = new Passenger[capacity];
+        items = new Passenger[capacity+1];
     }
 
     @Override
     public void enqueue(Passenger item) {
-        Passenger temp = null;
-        items[size] = item;
-
+        //Passenger temp = null;
+        items[++size] = item;
         int position = size;
-        while (items[position].compareTo(items[(position - 1) / 2]) < 0) {
-
-            temp = items[(position - 1) / 2];
-            items[(position - 1) / 2] = items[position];
-            items[position] = temp;
-            position = (position - 1) / 2;
+        while (items[parent(position)] != null && items[position].compareTo(items[parent(position)]) < 0) {
+            swap(position, parent(position));
+            position = parent(position);
         }
-        size++;
 
     }
 
     @Override
     public Passenger dequeue() {
-        Passenger first = items[0];
-        Passenger temp;
-
-        items[0] = items[size - 1];
-        items[size - 1] = null;
-        int pos = 0;
-        while (pos * 2 + 1< size && items[pos * 2 + 1] != null && pos * 2 + 2< size && items[pos * 2 + 2] != null) {
-            if (items[pos * 2 + 1].compareTo(items[pos * 2 + 2]) >= 0){
-                System.out.println("go west!");
-                temp = items[pos * 2 +1];
-                items[pos * 2 +1] = items[pos];
-                items[pos] = temp;
-                pos = pos * 2 + 1;
+        // Reference for item with highest priority
+        Passenger first = items[1];
+        // Move last item on top
+        items[1] = items[size];
+        items[size] = null;
+        size--;
+        int pos = 1;
+        // Trickle down until childelements are either higher or null
+        // While both children are there...
+        while (leftChild(pos)<= size  && rightChild(pos)< size ) {
+            //Find smallest child and swap
+            if (items[leftChild(pos)].compareTo(items[rightChild(pos)]) <= 0 
+                    && items[pos].compareTo(items[leftChild(pos)])>0){
+//                System.out.println("Left child: "+items[leftChild(pos)].getCategory() 
+//                        + "should be higher up than pos " +items[pos].getCategory());
+                swap(pos,leftChild(pos));
+                pos = leftChild(pos);
             } 
-            else if (items[pos * 2 + 1].compareTo(items[pos * 2 + 2]) < 0){
-                System.out.println("go right!");
-                temp = items[pos * 2 +2];
-                items[pos * 2 +2] = items[pos];
-                items[pos] = temp;
-                pos = pos * 2 + 2;
+            else if (items[leftChild(pos)].compareTo(items[rightChild(pos)]) > 0
+                    && items[pos].compareTo(items[rightChild(pos)])>0){
+//      System.out.println("Right child: "+items[rightChild(pos)].getCategory() 
+//                        + "should be higher up than pos " +items[pos].getCategory());
+                swap(pos,rightChild(pos));
+                pos = rightChild(pos);
             }
             else break;
             
         }
-        if (pos * 2 + 1< size && items[pos * 2 + 1] != null || pos * 2 + 2< size && items[pos * 2 + 2] != null) {
-
-        }
-
+        if (leftChild(pos)<= size && items[pos].compareTo(items[leftChild(pos)])>0) swap(pos,leftChild(pos));
+    
+        printQueue();
+        //System.out.println("First in line is a: "+first.getCategory());
         return first;
+    }
+    private int parent(int position){
+        return position/2;
+    }
+    private int leftChild(int node){
+        return node*2;
+    }
+    private int rightChild(int node){
+        return node*2+1;
     }
 
     @Override
@@ -108,8 +121,28 @@ public class PrioritisingPassenger implements PriorityQueue<Passenger> {
         return size;
     }
 
-    private void swap() {
-
+    private void swap(int pos1, int pos2) {
+        items[0] = items[pos1];
+        items[pos1] = items[pos2];
+        items[pos2] = items[0];
     }
-
+void printQueue(){
+    if (true) return;
+    String line = "";
+    int numsOnLine = 1;
+    for (int i = 1; i < size; i++) {
+        if (i == numsOnLine){
+            line+= System.lineSeparator();
+            numsOnLine*=2;
+        }
+        for (int j = 0; j < size/(numsOnLine); j++) {
+            line += "  ";
+        }
+        line+= items[i].getCategory();
+        for (int j = 0; j < size/(numsOnLine); j++) {
+            line += "  ";
+        }
+    }
+    System.out.println(line);
+}
 }
